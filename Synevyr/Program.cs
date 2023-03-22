@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.HttpOverrides;
 using Synevyr.Infrastructure;
 using Synevyr.Models;
 using Synevyr.Services;
@@ -16,6 +17,11 @@ builder.Services.AddHttpClient<RaiderIoApi>((client =>
 }));
 builder.Services.AddHostedService<DataUpdateService>();
 var app = builder.Build();
+
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
 
 app.MapGet("api/tgb/members", async (RaiderIoApi api, IRepository<GuildMemberModel> repo) =>
 {
