@@ -17,9 +17,7 @@ builder.Services.AddHttpClient<RaiderIoApi>((client =>
 builder.Services.AddHostedService<DataUpdateService>();
 var app = builder.Build();
 
-app.MapGet("/", () => "Hello World!");
-
-app.MapGet("tgb/members", async (RaiderIoApi api, IRepository<GuildMemberModel> repo) =>
+app.MapGet("api/tgb/members", async (RaiderIoApi api, IRepository<GuildMemberModel> repo) =>
 {
     var response = await api.GetGuildInfo("silvermoon","synevyr");
 
@@ -40,7 +38,7 @@ app.MapGet("tgb/members", async (RaiderIoApi api, IRepository<GuildMemberModel> 
     }
 });
 
-app.MapGet("tgb/dungeons/{slug}", async (RaiderIoApi api, IRepository<DungeonModel> repo, string slug) =>
+app.MapGet("api/tgb/dungeons/{slug}", async (RaiderIoApi api, IRepository<DungeonModel> repo, string slug) =>
 {
     if (string.IsNullOrEmpty(slug))
     {
@@ -59,7 +57,7 @@ app.MapGet("tgb/dungeons/{slug}", async (RaiderIoApi api, IRepository<DungeonMod
     }
 });
 
-app.MapGet("tgb/runs", async (RaiderIoApi api, IRepository<DungeonRunModel> repo, IRepository<GuildMemberModel> memberRepo) =>
+app.MapGet("api/tgb/runs", async (RaiderIoApi api, IRepository<DungeonRunModel> repo, IRepository<GuildMemberModel> memberRepo) =>
 {
     var members = memberRepo
         .AsQuaryable()
@@ -102,7 +100,7 @@ app.MapGet("tgb/runs", async (RaiderIoApi api, IRepository<DungeonRunModel> repo
     }
 });
 
-app.MapGet("tgb", (IRepository<GuildMemberModel> membersRepo, IRepository<DungeonRunModel> runsRepo, DateTime start) =>
+app.MapGet("api/tgb", (IRepository<GuildMemberModel> membersRepo, IRepository<DungeonRunModel> runsRepo, DateTime start) =>
 {
    var members =  membersRepo.AsQuaryable().Where(x => x.Rank != 9 && x.Rank != 99).ToList();
    var runs = runsRepo.AsQuaryable()
@@ -147,7 +145,7 @@ app.MapGet("tgb", (IRepository<GuildMemberModel> membersRepo, IRepository<Dungeo
    return result.Where(x=>x.Score != 0).OrderByDescending(x=>x.Score);
 });
 
-app.MapGet("tgb/periods", (IRepository<DungeonRunModel> runsRepo) =>
+app.MapGet("api/tgb/periods", (IRepository<DungeonRunModel> runsRepo) =>
 {
     return runsRepo.AsQuaryable().Select(x => new
     {
