@@ -1,3 +1,4 @@
+using System.Net;
 using Microsoft.AspNetCore.HttpOverrides;
 using Synevyr.Infrastructure;
 using Synevyr.Models;
@@ -16,6 +17,10 @@ builder.Services.AddHttpClient<RaiderIoApi>((client =>
     client.BaseAddress = new Uri("https://raider.io/api/");
 }));
 builder.Services.AddHostedService<DataUpdateService>();
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.KnownProxies.Add(IPAddress.Parse("10.0.0.100"));
+});
 var app = builder.Build();
 
 app.UseForwardedHeaders(new ForwardedHeadersOptions
