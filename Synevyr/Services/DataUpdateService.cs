@@ -26,14 +26,26 @@ public class DataUpdateService : IHostedService
         foreach (var member in members)
         {
             var characterInfo = await _api.GetCharacterInfo("silvermoon", member.character.name, "season-df-1&tier=29");
-        
-            _memberRepo.Save(new GuildMemberModel()
+
+            var existiongMember = _memberRepo.AsQuaryable().FirstOrDefault(x => x.CharacterId == characterInfo.characterDetails.character.id);
+
+            if (existiongMember != null)
             {
-                Name = member.character.name,
-                Rank = member.rank,
-                CharacterId = characterInfo.characterDetails.character.id,
-                Picture = characterInfo.characterDetails.character.thumbnailUrl
-            });
+                existiongMember.Rank = member.rank;
+                existiongMember.Picture = characterInfo.characterDetails.character.thumbnailUrl;
+
+                _memberRepo.Save(existiongMember);
+            }
+            else
+            {
+                _memberRepo.Save(new GuildMemberModel()
+                {
+                    Name = member.character.name,
+                    Rank = member.rank,
+                    CharacterId = characterInfo.characterDetails.character.id,
+                    Picture = characterInfo.characterDetails.character.thumbnailUrl
+                });
+            }
         }
     }
 

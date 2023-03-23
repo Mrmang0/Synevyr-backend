@@ -1,11 +1,30 @@
 using System.Net;
 using Microsoft.AspNetCore.HttpOverrides;
+using Serilog;
+using Serilog.Events;
+using Serilog.Sinks.SystemConsole.Themes;
 using Synevyr.Infrastructure;
 using Synevyr.Models;
 using Synevyr.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.WebHost.UseKestrel(so =>
+{
+    so.Limits.MaxConcurrentConnections = 100;
+    so.Limits.MaxConcurrentUpgradedConnections = 100;
+    so.Limits.MaxRequestBodySize = 52428800;
+});
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.KnownProxies.Add(IPAddress.Parse("10.0.0.100"));
+});
+var serilog = new LoggerConfiguration()
+    .MinimumLevel.Debug()
+    .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Information)
+    .Enrich.FromLogContext()
+    .WriteTo.Console(theme: AnsiConsoleTheme.Code)
+    .CreateLogger();
+builder.Logging.AddSerilog(serilog);
 builder.Configuration
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("appsettings.json", false, true)
@@ -17,16 +36,27 @@ builder.Services.AddHttpClient<RaiderIoApi>((client =>
     client.BaseAddress = new Uri("https://raider.io/api/");
 }));
 builder.Services.AddHostedService<DataUpdateService>();
-builder.Services.Configure<ForwardedHeadersOptions>(options =>
+
+builder.Services.AddCors(options =>
 {
-    options.KnownProxies.Add(IPAddress.Parse("10.0.0.100"));
+    options.AddDefaultPolicy(x => x.AllowAnyOrigin()
+        .AllowAnyHeader()
+        .AllowAnyMethod());
 });
+
 var app = builder.Build();
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
 });
+
+app.UseCors();
 
 app.MapGet("api/tgb/members", async (RaiderIoApi api, IRepository<GuildMemberModel> repo) =>
 {
