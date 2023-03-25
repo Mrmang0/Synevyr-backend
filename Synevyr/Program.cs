@@ -167,11 +167,15 @@ app.MapGet("api/tgb", (IRepository<GuildMemberModel> membersRepo, IRepository<Du
        foreach (var run in participatedRuns)
        {
            var rio = run.Members.First(x => x.Id == member.Id).Rio;
-           var carriages = run.Members.Where(x => x.Id != Guid.Empty && x.Id != member.Id && rio - x.Rio > 250).ToList();
+           var carriages = run.Members.Where(x => x.Id != Guid.Empty && x.Id != member.Id && rio - x.Rio > 250)
+               .ToList();
 
-           var guildMembers = carriages.Select(x => membersRepo.AsQuaryable().FirstOrDefault(y => x.Id == y.Id && y.Rank != 8));
+           var guildMembers =
+               carriages.Select(x => membersRepo.AsQuaryable().FirstOrDefault(y => x.Id == y.Id && y.Rank != 8)).Where(x=>x != null);
 
-           carriages = carriages.Where(x => guildMembers.Any(y => y.Id == x.Id)).ToList();
+           if (!guildMembers?.Any() ?? false)  continue;
+
+               carriages = carriages.Where(x => guildMembers.Any(y => y.Id == x.Id)).ToList();
            
            if(!carriages.Any())
                break;
