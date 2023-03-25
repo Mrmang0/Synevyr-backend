@@ -53,7 +53,6 @@ public class DataUpdateService : IHostedService
     {
         var members = _memberRepo
             .AsQuaryable()
-            .Where(x=>x.Rank != 9 && x.Rank != 99)
             .ToList();
 
         var period = await _api.GetPeriods();

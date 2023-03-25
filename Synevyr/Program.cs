@@ -143,7 +143,7 @@ app.MapGet("api/tgb/runs", async (RaiderIoApi api, IRepository<DungeonRunModel> 
 
 app.MapGet("api/tgb", (IRepository<GuildMemberModel> membersRepo, IRepository<DungeonRunModel> runsRepo, DateTime start) =>
 {
-   var members =  membersRepo.AsQuaryable().Where(x => x.Rank != 8).ToList();
+   var members =  membersRepo.AsQuaryable().Where(x => x.Rank != 8 && x.Rank != 1).ToList();
    var runs = runsRepo.AsQuaryable()
        .Where(x=>x.PeriodStart == start)
        .Where(x => x.Members.Count(x => x.Id != Guid.Empty) > 1)
@@ -171,7 +171,7 @@ app.MapGet("api/tgb", (IRepository<GuildMemberModel> membersRepo, IRepository<Du
                .ToList();
 
            var guildMembers =
-               carriages.Select(x => membersRepo.AsQuaryable().FirstOrDefault(y => x.Id == y.Id && y.Rank != 8)).Where(x=>x != null);
+               carriages.Select(x => membersRepo.AsQuaryable().FirstOrDefault(y => x.Id == y.Id && y.Rank != 8 && y.Rank != 1)).Where(x=>x != null);
 
            if (!guildMembers?.Any() ?? false)  continue;
 
