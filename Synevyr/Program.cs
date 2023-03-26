@@ -204,6 +204,8 @@ app.MapGet("api/tgb/periods", (IRepository<DungeonRunModel> runsRepo) =>
     }).ToList().DistinctBy(x=>x.Start);
 });
 
+app.MapGet("api/tgb/lastUpdate", (IRepository<UpdateDetails> updateRepo) => updateRepo.AsQuaryable().FirstOrDefault());
+
 
 
 app.Run();

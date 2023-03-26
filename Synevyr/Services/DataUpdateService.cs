@@ -8,13 +8,16 @@ public class DataUpdateService : IHostedService
     private readonly RaiderIoApi _api;
     private readonly IRepository<GuildMemberModel> _memberRepo;
     private readonly IRepository<DungeonRunModel> _dungeonRepo;
+    private readonly IRepository<UpdateDetails> _updateRepo;
     private bool IsRunning = true;
+    private Timer _timer;
 
-    public DataUpdateService(RaiderIoApi api, IRepository<GuildMemberModel> memberRepo, IRepository<DungeonRunModel> dungeonRepo)
+    public DataUpdateService(RaiderIoApi api, IRepository<GuildMemberModel> memberRepo, IRepository<DungeonRunModel> dungeonRepo, IRepository<UpdateDetails> updateRepo)
     {
         _api = api;
         _memberRepo = memberRepo;
         _dungeonRepo = dungeonRepo;
+        _updateRepo = updateRepo;
     }
 
     public async Task UpdateGuildMembers()
@@ -87,29 +90,35 @@ public class DataUpdateService : IHostedService
                     PeriodStart =  DateTime.Parse(currentPeriod.start),
                     PeriodEnd = DateTime.Parse(currentPeriod.end)
                 });
+
+                var entity = _updateRepo.AsQuaryable().FirstOrDefault() ?? new UpdateDetails();
+                entity.LastUpdate = DateTime.Now;
+                _updateRepo.Save(entity);
             }
         }
     }
 
-    public Task StartAsync(CancellationToken cancellationToken)
+    public async Task SetTime(CancellationToken cancellationToken)
     {
-        Task.Run(async () =>
-        {
-            while (IsRunning)
-            {
-                await UpdateGuildMembers();
-                await Task.Delay(60 * 1000, cancellationToken);
-                await UpdateRuns();
-                await Task.Delay(TimeSpan.FromHours(3), cancellationToken);
-            }
-        }, cancellationToken);
-
-        return Task.CompletedTask;
+        _timer = new Timer(async (x) => await UpdateRutine(cancellationToken), null, TimeSpan.Zero, TimeSpan.FromHours(2));
+    }
+    
+    private async Task UpdateRutine(CancellationToken cancellationToken)
+    {
+        await UpdateGuildMembers();
+        await Task.Delay(60 * 1000, cancellationToken);
+        await UpdateRuns();
+        await Task.Delay(TimeSpan.FromHours(3), cancellationToken);
     }
 
-    public Task StopAsync(CancellationToken cancellationToken)
+    public async Task StartAsync(CancellationToken cancellationToken)
     {
+        await SetTime(cancellationToken);
+    }
+
+    public async Task StopAsync(CancellationToken cancellationToken)
+    {
+        await _timer.DisposeAsync();
         IsRunning = false;
-        return Task.CompletedTask;
     }
 }
