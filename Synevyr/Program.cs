@@ -145,7 +145,7 @@ app.MapGet("api/tgb", (IRepository<GuildMemberModel> membersRepo, IRepository<Du
 {
     var bannedRanks = new[] {0, 1, 2, 8};
     
-   var members =  membersRepo.AsQuaryable().Where(x => bannedRanks.Any(y=>x.Rank == y)).ToList();
+   var members =  membersRepo.AsQuaryable().Where(x => bannedRanks.All(y => x.Rank != y)).ToList();
    var runs = runsRepo.AsQuaryable()
        .Where(x=>x.PeriodStart == start)
        .Where(x => x.Members.Count(x => x.Id != Guid.Empty) > 1)
