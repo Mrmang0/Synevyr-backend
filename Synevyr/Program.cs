@@ -173,7 +173,9 @@ app.MapGet("api/tgb", (IRepository<GuildMemberModel> membersRepo, IRepository<Du
                .ToList();
 
            var guildMembers =
-               carriages.Select(x => membersRepo.AsQuaryable().FirstOrDefault(y => x.Id == y.Id && y.Rank != 8 && y.Rank != 1 && y.Rank != 2)).Where(x=>x != null);
+               carriages.Select(x => membersRepo.AsQuaryable()
+                   .FirstOrDefault(y => x.Id == y.Id && bannedRanks.All(z=>y.Rank != z)))
+                   .Where(x=>x != null);
 
            if (!guildMembers?.Any() ?? false)  continue;
 
