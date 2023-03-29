@@ -143,7 +143,7 @@ app.MapGet("api/tgb/runs", async (RaiderIoApi api, IRepository<DungeonRunModel> 
 
 app.MapGet("api/tgb", (IRepository<GuildMemberModel> membersRepo, IRepository<DungeonRunModel> runsRepo, DateTime start) =>
 {
-    var bannedRanks = new[] {0, 1, 2, 8};
+    var bannedRanks = new[] {0, 1, 2, 8, 9, 99};
     
    var members =  membersRepo.AsQuaryable().Where(x => bannedRanks.All(y => x.Rank != y)).ToList();
    var runs = runsRepo.AsQuaryable()
@@ -174,15 +174,15 @@ app.MapGet("api/tgb", (IRepository<GuildMemberModel> membersRepo, IRepository<Du
 
            var guildMembers =
                carriages.Select(x => membersRepo.AsQuaryable()
-                   .FirstOrDefault(y => x.Id == y.Id && bannedRanks.All(z=>y.Rank != z)))
-                   .Where(x=>x != null);
+                       .FirstOrDefault(y => x.Id == y.Id && bannedRanks.All(z => y.Rank != z)))
+                   .Where(x => x != null);
 
-           if (!guildMembers?.Any() ?? false)  continue;
+           if (!guildMembers?.Any() ?? false) continue;
 
-               carriages = carriages.Where(x => guildMembers.Any(y => y.Id == x.Id)).ToList();
-           
-           if(!carriages.Any())
-               break;
+           carriages = carriages.Where(x => guildMembers.Any(y => y.Id == x.Id)).ToList();
+
+           if (!carriages.Any())
+               continue;
            var rioSum = carriages.Select((x, i) => 10 - i * 15 * 10 / 100).Sum();
            var score = rioSum + run.KeyLevel * 5d;
            if (run.TimeGate > run.TimeSpent) score *= 1.5;
