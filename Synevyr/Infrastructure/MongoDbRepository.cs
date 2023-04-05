@@ -63,6 +63,16 @@ public class MongoDbRepository<TModel> : IRepository<TModel> where TModel : Enti
 
         model.Updated = DateTime.UtcNow;
         var filter = Builders<TModel>.Filter.Eq(x => x.Id, model.Id);
-        this.Collection.ReplaceOne(filter, model, new ReplaceOptions { IsUpsert = true });
+        Collection.ReplaceOne(filter, model, new ReplaceOptions { IsUpsert = true });
+    }
+    
+    public void Remove(TModel spec)
+    {
+        if (spec == null)
+            return;
+        var builder = Builders<TModel>.Filter;
+        var filter = builder.Eq(x => x.Id, spec.Id);
+
+        Collection.DeleteOne(filter);
     }
 }

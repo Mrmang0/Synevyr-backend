@@ -11,7 +11,7 @@ public class CharacterDetails
     // public ItemDetails itemDetails { get; set; }
     public string seasonSlug { get; set; }
     // public MythicPlusScores mythicPlusScores { get; set; }
-    // public BestMythicPlusScore bestMythicPlusScore { get; set; }
+    public BestMythicPlusScore bestMythicPlusScore { get; set; }
     public string season { get; set; }
     public string tier { get; set; }
     public bool isMissingPersonaFields { get; set; }

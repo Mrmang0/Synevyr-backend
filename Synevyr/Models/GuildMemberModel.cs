@@ -8,4 +8,5 @@ public class GuildMemberModel : Entity
     public int CharacterId { get; set; }
     public string Picture { get; set; }
     public int Rank { get; set; }
+    public double Rio { get; set; }
 }
