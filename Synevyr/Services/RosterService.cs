@@ -16,12 +16,32 @@ public class RosterService
         _rankRepo = rankRepo;
     }
 
-    public IEnumerable<RosterDto> GetRoster()
+    public IEnumerable<RosterDto> GetRoster(bool descending = false, string search = "", string sortField = "")
     {
-        var members = _membersRepo.AsQuaryable().ToList();
+        var members = _membersRepo.AsQuaryable();
+
+        if (!string.IsNullOrEmpty(search))
+        {
+            members = members.Where(x => x.Name.Contains(search));
+        }
+
+        if (!string.IsNullOrEmpty(sortField))
+        {
+            var field = typeof(GuildMemberModel).GetProperties().FirstOrDefault(x => x.Name == sortField);
+            if (field != null)
+            {
+                members = descending
+                    ? members.OrderByDescending(x => field.GetValue(x))
+                    : members.OrderBy(x => field.GetValue(x));
+            }
+
+        }
+
+        var result = members.ToList();
+
         var ranks = _rankRepo.AsQuaryable().ToList();
 
-        return members.Select(x => new RosterDto()
+        return result.Select(x => new RosterDto()
         {
             Rio = x.Rio,
             Name = x.Name,

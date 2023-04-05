@@ -24,7 +24,7 @@ public class DataUpdateService : IHostedService
     {
         await _tgbService.UpdateGuildMembers();
         await Task.Delay(60 * 1000, cancellationToken);
-        // await _tgbService.UpdateRuns();
+        await _tgbService.UpdateRuns();
         await Task.Delay(TimeSpan.FromHours(3), cancellationToken);
     }
 
