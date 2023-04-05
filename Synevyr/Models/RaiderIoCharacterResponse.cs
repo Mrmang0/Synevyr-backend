@@ -1,4 +1,7 @@
-﻿public class RaiderIoCharacterResponse
+﻿using System.Text.Json.Serialization;
+using ThirdParty.Json.LitJson;
+
+public class RaiderIoCharacterResponse
 {
     public CharacterDetails characterDetails { get; set; }
 }
@@ -32,9 +35,27 @@ public class DetailedCharacter
     public int? achievementPoints { get; set; }
     public int? honorableKills { get; set; }
     public int? itemLevelEquipped { get; set; }
+    [JsonPropertyName("class")]
+    public CharacterClass @class { get; set; }
+    public ClassSpec spec { get; set; }
     public string thumbnailUrl { get; set; }
     // public Guild guild { get; set; }
 }
+public class ClassSpec
+{
+    public string name { get; set; }
+    public string slug { get; set; }
+}
+
+
+public class CharacterClass
+{
+    public int id { get; set; }
+    public string name { get; set; }
+    public string slug { get; set; }
+}
+
+
 
 public class Covenant
 {

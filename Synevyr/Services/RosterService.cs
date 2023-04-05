@@ -46,7 +46,10 @@ public class RosterService
             Rio = x.Rio,
             Name = x.Name,
             Image = x.Picture,
-            Rank = ranks.FirstOrDefault(y => x.Rank == y.RankId)?.Name ?? ""
+            Rank = ranks.FirstOrDefault(y => x.Rank == y.RankId)?.Name ?? "",
+            CharacterClass = x.CharacterClass,
+            Spec = x.Spec,
+            ItemLevel = x.ItemLevel
         });
     }
 

@@ -67,6 +67,10 @@ public class TheGreatBoostService
         {
             existiongMember.Rank = member.rank;
             existiongMember.Picture = characterInfo.characterDetails.character.thumbnailUrl;
+            existiongMember.Rio = characterInfo.characterDetails.bestMythicPlusScore.score;
+            existiongMember.CharacterClass = characterInfo.characterDetails.character.@class.name;
+            existiongMember.ItemLevel = characterInfo.characterDetails.character.itemLevelEquipped;
+            existiongMember.Spec = characterInfo.characterDetails.character.spec.name;
 
             _memberRepo.Save(existiongMember);
         }
@@ -78,7 +82,10 @@ public class TheGreatBoostService
                 Rank = member.rank,
                 CharacterId = characterInfo.characterDetails.character.id,
                 Picture = characterInfo.characterDetails.character.thumbnailUrl,
-                Rio = characterInfo.characterDetails.bestMythicPlusScore.score
+                Rio = characterInfo.characterDetails.bestMythicPlusScore.score,
+                CharacterClass = characterInfo.characterDetails.character.@class.name,
+                ItemLevel = characterInfo.characterDetails.character.itemLevelEquipped,
+                Spec = characterInfo.characterDetails.character.spec.name,
             });
         }
     }
