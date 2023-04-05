@@ -63,7 +63,12 @@ app.MapGet("api/tgb", (TheGreatBoostService service, DateTime start) => service.
 app.MapGet("api/tgb/periods", (TheGreatBoostService service) => service.GetPerriods());
 app.MapGet("api/tgb/lastUpdate", (TheGreatBoostService service) => service.GetLastUpdate());
 
-app.MapGet("api/roster", (RosterService service) => service.GetRoster());
+app.MapGet("api/roster", (RosterService service,bool descending,string search, string sortField) =>
+{
+    if (string.IsNullOrEmpty(sortField)) sortField = "rank";
+    
+    return service.GetRoster(descending,search, sortField);
+});
 
 app.Run();
 
