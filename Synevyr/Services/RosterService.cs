@@ -18,7 +18,7 @@ public class RosterService
 
     public IEnumerable<RosterDto> GetRoster(bool descending = false, string search = "", string sortField = "")
     {
-        var members = _membersRepo.AsQuaryable();
+        IEnumerable<GuildMemberModel> members = _membersRepo.AsQuaryable().ToList();
 
         if (!string.IsNullOrEmpty(search))
         {
