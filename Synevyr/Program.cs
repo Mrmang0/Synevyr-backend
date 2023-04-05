@@ -30,7 +30,7 @@ builder.Configuration
 builder.Services.Configure<MongodbSettings>(builder.Configuration.GetSection(nameof(MongodbSettings)));
 builder.Services.AddTransient(typeof(IRepository<>), typeof(MongoDbRepository<>));
 builder.Services.AddTransient<TheGreatBoostService>();
-builder.Services.AddTransient<RoosterService>();
+builder.Services.AddTransient<RosterService>();
 builder.Services.AddHttpClient<RaiderIoApi>((client =>
 {
     client.BaseAddress = new Uri("https://raider.io/api/");
@@ -63,7 +63,7 @@ app.MapGet("api/tgb", (TheGreatBoostService service, DateTime start) => service.
 app.MapGet("api/tgb/periods", (TheGreatBoostService service) => service.GetPerriods());
 app.MapGet("api/tgb/lastUpdate", (TheGreatBoostService service) => service.GetLastUpdate());
 
-
+app.MapGet("api/roster", (RosterService service) => service.GetRoster());
 
 app.Run();
 

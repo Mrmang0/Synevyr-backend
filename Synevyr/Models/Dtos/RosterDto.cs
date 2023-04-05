@@ -1,6 +1,6 @@
 ﻿namespace Synevyr.Models.Dtos;
 
-public class RoosterDto
+public class RosterDto
 {
     public string Name { get; set; }
     public string Image { get; set; }

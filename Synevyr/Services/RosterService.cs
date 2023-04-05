@@ -5,24 +5,23 @@ using Synevyr.Models.Dtos;
 
 namespace Synevyr.Services;
 
-public class RoosterService
+public class RosterService
 {
     private readonly IRepository<GuildMemberModel> _membersRepo;
     private readonly IRepository<GuildRankModel> _rankRepo;
 
-    public RoosterService(IRepository<GuildMemberModel> membersRepo, IRepository<GuildRankModel> rankRepo)
+    public RosterService(IRepository<GuildMemberModel> membersRepo, IRepository<GuildRankModel> rankRepo)
     {
         _membersRepo = membersRepo;
         _rankRepo = rankRepo;
     }
 
-    public IEnumerable<RoosterDto> GetRooster()
+    public IEnumerable<RosterDto> GetRoster()
     {
         var members = _membersRepo.AsQuaryable().ToList();
         var ranks = _rankRepo.AsQuaryable().ToList();
 
-
-        return members.Select(x => new RoosterDto()
+        return members.Select(x => new RosterDto()
         {
             Rio = x.Rio,
             Name = x.Name,
