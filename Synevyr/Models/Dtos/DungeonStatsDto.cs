@@ -1,7 +1,7 @@
 ﻿namespace Synevyr.Models.Dtos;
 
 public record DungeonStatsDto(string Name, IEnumerable<RunMember> Members, DateTime PeriodStart, DateTime PeriodEnd,
-    int TimeSpent, int TimeGate, bool InTime, int KeyLevel, double Scroe, string CompletedAt)
+    TimeSpan TimeSpent, TimeSpan TimeGate, bool InTime, int KeyLevel, double Scroe, string CompletedAt)
 {
     public override string ToString()
     {
