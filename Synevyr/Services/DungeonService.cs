@@ -24,19 +24,30 @@ public class DungeonService
         if (names.Any(x => !string.IsNullOrEmpty(x)))
         {
             runs = names
-                .Where(x=>!string.IsNullOrEmpty(x))
+                .Where(x => !string.IsNullOrEmpty(x))
                 .Aggregate(runs, (current, name) => current.Where(x => x.Members.Any(x => x.Name == name)));
         }
 
         if (start.HasValue)
             runs = runs.Where(x => x.PeriodStart >= start);
-        
+
         if (end.HasValue)
             runs = runs.Where(x => x.PeriodStart <= end);
 
         var dungeons = _dungeonRepo.AsQuaryable().ToList();
-        
-        var result = runs.ToList().Select(x => new DungeonStatsDto(dungeons.FirstOrDefault(y=>x.DungeonId == y.DungeonId)?.Name ?? "Unkown", x.Members, x.PeriodStart, x.PeriodEnd, x.TimeSpent, x.TimeGate, x.TimeSpent < x.TimeGate, x.KeyLevel, x.Score));
+
+        var result = runs.ToList()
+            .Select(x =>
+                new DungeonStatsDto(dungeons.FirstOrDefault(y => x.DungeonId == y.DungeonId)?.Name ?? "Unkown",
+                    x.Members,
+                    x.PeriodStart,
+                    x.PeriodEnd, 
+                    x.TimeSpent, 
+                    x.TimeGate, 
+                    x.TimeSpent < x.TimeGate,
+                    x.KeyLevel,
+                    x.Score,
+                    x.completedAt));
         return result;
     }
 
@@ -50,6 +61,7 @@ public class DungeonService
 
             run.Season = result.season;
             run.DungeonId = result.dungeon.id;
+            run.completedAt = result.completed_at;
             
             _runRepo.Save(run);
             await Task.Delay(500);
