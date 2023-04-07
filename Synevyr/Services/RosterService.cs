@@ -22,12 +22,12 @@ public class RosterService
 
         if (!string.IsNullOrEmpty(search))
         {
-            members = members.Where(x => x.Name.Contains(search));
+            members = members.Where(x => x.Name.ToLower().Contains(search.ToLower()));
         }
 
         if (!string.IsNullOrEmpty(sortField))
         {
-            var field = typeof(GuildMemberModel).GetProperties().FirstOrDefault(x => x.Name == sortField);
+            var field = typeof(GuildMemberModel).GetProperties().FirstOrDefault(x => string.Equals(x.Name, sortField, StringComparison.CurrentCultureIgnoreCase));
             if (field != null)
             {
                 members = descending

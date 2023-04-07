@@ -36,7 +36,7 @@ public class TheGreatBoostService
                  Guid.Empty,
             CharacterId = x.character.id,
             Rio = x.ranks.score,
-            Name = x.character.name
+            Name = x.character.name,
         });
 
         _dungeonRepo.Save(new DungeonRunModel()
@@ -48,7 +48,9 @@ public class TheGreatBoostService
             KeyLevel = details.mythic_level,
             Score = details.score,
             PeriodStart = DateTime.Parse(currentPeriod.start),
-            PeriodEnd = DateTime.Parse(currentPeriod.end)
+            PeriodEnd = DateTime.Parse(currentPeriod.end),
+            DungeonId = run.summary.dungeon.id,
+            Season = run.summary.season
         });
 
         var entity = _updateRepo.AsQuaryable().FirstOrDefault() ?? new UpdateDetails();
@@ -134,6 +136,7 @@ public class TheGreatBoostService
                 try
                 {
                     await UpdateRunInfo(run, currentPeriod);
+                    await Task.Delay(250);
                 }
                 catch (Exception e)
                 {

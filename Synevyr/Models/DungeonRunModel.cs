@@ -12,6 +12,8 @@ public class DungeonRunModel : Entity
     public double Score { get; set; }
     public DateTime PeriodStart { get; set; }
     public DateTime PeriodEnd { get; set; }
+    public int DungeonId { get; set; }
+    public string Season { get; set; }
 }
 
 public class RunMember
