@@ -17,7 +17,7 @@ public class DungeonService
         _api = api;
     }
 
-    public IEnumerable<DungeonStatsDto> GetRuns(string[] names, DateTime? start, DateTime? end, int skip, int take, bool descending)
+    public SearchResult<DungeonStatsDto> GetRuns(string[] names, DateTime? start, DateTime? end, int skip, int take, bool descending)
     {
         var runs = _runRepo.AsQuaryable();
         runs = descending ? runs.OrderByDescending(x => x.completedAt) : runs.OrderBy(x => x.completedAt);
@@ -37,6 +37,8 @@ public class DungeonService
 
         var dungeons = _dungeonRepo.AsQuaryable().ToList();
 
+        var count = runs.Count();
+        
         if (skip != 0)
         {
             runs = runs.Skip(skip);
@@ -59,7 +61,11 @@ public class DungeonService
                     x.KeyLevel,
                     x.Score,
                     x.completedAt));
-        return result;
+        return new SearchResult<DungeonStatsDto>()
+        {
+            Count = count,
+            Result = result
+        };
     }
 
     public async Task MAKE_DUNGEONS_GREAT_AGAIN()
