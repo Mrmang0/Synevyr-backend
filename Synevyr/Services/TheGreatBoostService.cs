@@ -26,8 +26,8 @@ public class TheGreatBoostService
 
     private async Task UpdateRunInfo(Models.Runs run, Current currentPeriod)
     {
-        var isExist = _dungeonRepo.AsQuaryable().Any(x => x.RunId == run.summary.keystone_run_id);
-        if (isExist) return;
+        var isExist = _dungeonRepo.AsQuaryable().FirstOrDefault(x => x.RunId == run.summary.keystone_run_id);
+        if (isExist != null && isExist.completedAt != DateTime.MinValue) return;
 
         var details = await _api.GetRunDetails(run.summary.keystone_run_id, run.summary.season);
         var runMembers = details.roster.ToList().Select(x => new RunMember()
@@ -51,7 +51,7 @@ public class TheGreatBoostService
             PeriodEnd = DateTime.Parse(currentPeriod.end),
             DungeonId = run.summary.dungeon.id,
             Season = run.summary.season,
-            completedAt = run.summary.completed_at
+            completedAt = DateTime.Parse(run.summary.completed_at)
         });
 
         var entity = _updateRepo.AsQuaryable().FirstOrDefault() ?? new UpdateDetails();
@@ -70,7 +70,7 @@ public class TheGreatBoostService
         {
             existiongMember.Rank = member.rank;
             existiongMember.Picture = characterInfo.characterDetails.character.thumbnailUrl;
-            existiongMember.Rio = characterInfo.characterDetails.bestMythicPlusScore.score;
+            existiongMember.Rio = characterInfo.characterDetails.bestMythicPlusScore?.score ?? 0;
             existiongMember.CharacterClass = characterInfo.characterDetails.character.@class.name;
             existiongMember.ItemLevel = characterInfo.characterDetails.character.itemLevelEquipped;
             existiongMember.Spec = characterInfo.characterDetails.character.spec.name;
@@ -85,7 +85,7 @@ public class TheGreatBoostService
                 Rank = member.rank,
                 CharacterId = characterInfo.characterDetails.character.id,
                 Picture = characterInfo.characterDetails.character.thumbnailUrl,
-                Rio = characterInfo.characterDetails.bestMythicPlusScore.score,
+                Rio = characterInfo.characterDetails?.bestMythicPlusScore?.score ?? 0,
                 CharacterClass = characterInfo.characterDetails.character.@class.name,
                 ItemLevel = characterInfo.characterDetails.character.itemLevelEquipped,
                 Spec = characterInfo.characterDetails.character.spec.name,
@@ -111,6 +111,7 @@ public class TheGreatBoostService
             try
             {
                 await UpdateGuildMemberInfo(member);
+                await Task.Delay(500);
             }
             catch (Exception e)
             {

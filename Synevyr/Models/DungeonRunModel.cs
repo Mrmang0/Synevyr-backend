@@ -14,7 +14,7 @@ public class DungeonRunModel : Entity
     public DateTime PeriodEnd { get; set; }
     public int DungeonId { get; set; }
     public string Season { get; set; }
-    public string completedAt { get; set; }
+    public DateTime completedAt { get; set; }
 }
 
 public class RunMember

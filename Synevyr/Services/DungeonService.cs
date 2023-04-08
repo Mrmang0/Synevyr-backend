@@ -17,10 +17,11 @@ public class DungeonService
         _api = api;
     }
 
-    public IEnumerable<DungeonStatsDto> GetRuns(string[] names, DateTime? start, DateTime? end)
+    public IEnumerable<DungeonStatsDto> GetRuns(string[] names, DateTime? start, DateTime? end, int skip, int take, bool descending)
     {
         var runs = _runRepo.AsQuaryable();
-
+        runs = descending ? runs.OrderByDescending(x => x.completedAt) : runs.OrderBy(x => x.completedAt);
+        
         if (names.Any(x => !string.IsNullOrEmpty(x)))
         {
             runs = names
@@ -36,6 +37,16 @@ public class DungeonService
 
         var dungeons = _dungeonRepo.AsQuaryable().ToList();
 
+        if (skip != 0)
+        {
+            runs = runs.Skip(skip);
+        }
+
+        if (take != 0)
+        {
+            runs = runs.Take(take);
+        }
+        
         var result = runs.ToList()
             .Select(x =>
                 new DungeonStatsDto(dungeons.FirstOrDefault(y => x.DungeonId == y.DungeonId)?.Name ?? "Unkown",
@@ -57,14 +68,13 @@ public class DungeonService
 
         foreach (var run in runs)
         {
-            var result = await _api.GetRunDetails(run.RunId, "season-df-1");
-
-            run.Season = result.season;
-            run.DungeonId = result.dungeon.id;
-            run.completedAt = result.completed_at;
+            // var result = await _api.GetRunDetails(run.RunId, "season-df-1");
+            //
+            // run.Season = result.season;
+            // run.DungeonId = result.dungeon.id;
+            // run.completedAt = DateTime.Parse(result.completed_at);
             
             _runRepo.Save(run);
-            await Task.Delay(500);
         }
             
     }

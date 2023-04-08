@@ -23,9 +23,10 @@ public class RaiderIoApi
         return response;
     }
 
-    public async Task<RaiderIoCharacterResponse> GetCharacterInfo(string realm,string name, string season)
+    public async Task<RaiderIoCharacterResponse> GetCharacterInfo(string realm, string name, string season)
     {
-        var response = await _client.GetFromJsonAsync<RaiderIoCharacterResponse>($"characters/eu/{realm}/{name}?season={season}");
+        var response =
+            await _client.GetFromJsonAsync<RaiderIoCharacterResponse>($"characters/eu/{realm}/{name}?season={season}");
         return response;
     }
 
