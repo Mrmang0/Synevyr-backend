@@ -37,8 +37,9 @@ public class TheGreatBoostService
             CharacterId = x.character.id,
             Rio = x.ranks.score,
             Name = x.character.name,
-        });
+        }).ToList();
         
+        if(runMembers.All(x=>x.Id == Guid.Empty)) return;
         _dungeonRepo.Save(new DungeonRunModel()
         {
             RunId = run.summary.keystone_run_id,

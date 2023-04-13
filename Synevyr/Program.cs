@@ -64,7 +64,14 @@ app.MapGet("api/tgb", (TheGreatBoostService service, DateTime start) => service.
 app.MapGet("api/tgb/periods", (TheGreatBoostService service) => service.GetPerriods());
 app.MapGet("api/tgb/lastUpdate", (TheGreatBoostService service) => service.GetLastUpdate());
 app.MapGet("api/roster", (RosterService service,bool descending,string search, string sortField) => service.GetRoster(descending,search, sortField));
-app.MapGet("api/dungeons", (DungeonService service,string[] names, DateTime? start, DateTime? end, int take, int skip, bool  descending) => service.GetRuns(names,start, end, skip, take, descending));
+app.MapGet("api/dungeons",
+    (DungeonService service, string names, DateTime? start, DateTime? end, int take, int skip, bool descending,
+            int minKey, int maxKey, int dungeonId) =>
+        service.GetRuns(names, start, end, skip, take, descending, minKey, maxKey, dungeonId));
+app.MapGet("api/dungeons/charts",
+    (DungeonService service, string names, DateTime? start, DateTime? end, bool descending,
+            int minKey, int maxKey, int dungeonId) =>
+        service.GetChartsData(names, start, end, descending, minKey, maxKey, dungeonId));
 
 app.Run();
 

@@ -1,4 +1,5 @@
-﻿using Synevyr.Infrastructure;
+﻿using Microsoft.AspNetCore.Mvc;
+using Synevyr.Infrastructure;
 using Synevyr.Models;
 using Synevyr.Models.Dtos;
 
@@ -17,18 +18,22 @@ public class DungeonService
         _api = api;
     }
 
-    public SearchResult<DungeonStatsDto> GetRuns(string[] names, DateTime? start, DateTime? end, int skip, int take, bool descending)
+    public SearchResult<DungeonStatsDto> GetRuns(string names, DateTime? start, DateTime? end, int skip, int take, bool descending, int minKeyLevel, int maxKeyLevel, int dungeonId)
     {
         var runs = _runRepo.AsQuaryable();
         runs = descending ? runs.OrderByDescending(x => x.completedAt) : runs.OrderBy(x => x.completedAt);
         
-        if (names.Any(x => !string.IsNullOrEmpty(x)))
+        if (!string.IsNullOrEmpty(names.Replace("\"", "")))
         {
-            runs = names
-                .Where(x => !string.IsNullOrEmpty(x))
-                .Aggregate(runs, (current, name) => current.Where(x => x.Members.Any(x => x.Name == name)));
+            var splitedNames = names.Split(',');
+            runs = runs.Where(x => x.Members.Any(y => splitedNames.Any(d => d == y.Name)));
         }
 
+        if (dungeonId > 0)
+        {
+            runs = runs.Where(x => x.DungeonId == dungeonId);
+        }
+        
         if (start.HasValue)
             runs = runs.Where(x => x.PeriodStart >= start);
 
@@ -48,6 +53,10 @@ public class DungeonService
         {
             runs = runs.Take(take);
         }
+
+        runs = runs.Where(x => x.KeyLevel >= minKeyLevel);
+        if(maxKeyLevel > 0)
+         runs = runs.Where(x => x.KeyLevel <= maxKeyLevel);
         
         var result = runs.ToList()
             .Select(x =>
@@ -65,6 +74,47 @@ public class DungeonService
         {
             Count = count,
             Result = result
+        };
+    }
+
+    public async Task<ChartsResponse> GetChartsData(string names, DateTime? start, DateTime? end, bool descending, int minKeyLevel, int maxKeyLevel, int dungeonId)
+    {
+        var runs =  GetRuns(names, start, end, 0, 0, descending, minKeyLevel, maxKeyLevel, dungeonId);
+
+        var groupedByKey = runs.Result.GroupBy(x => x.KeyLevel)
+            .Select(x => new ChartData<int>(x.Key, x.Count()))
+            .OrderBy(x=>x.key);
+        var groupedByMembers = runs.Result.GroupBy(x => x.Members.Count(x => x.Id != Guid.Empty))
+            .Select(x => new ChartData<int>(x.Key, x.Count()))
+            .OrderBy(x=>x.key);
+        var groupedByHours = runs.Result.Where(x=>x.CompletedAt != DateTime.MinValue)
+            .GroupBy(x => (x?.CompletedAt - x?.TimeSpent)?.Hour ?? -2).Where(x=>x.Key != -2)
+            .Select(x => new ChartData<int>(x.Key, x.Count()))
+            .OrderBy(x=>x.key);
+        var groupedByDays = runs.Result.GroupBy(x => (x.CompletedAt.DayOfWeek))
+            .Select(x => new ChartData<int>((int)x.Key, x.Count()))
+            .OrderBy(x=>x.key);
+        var groupedByMonth = runs.Result.GroupBy(x => (x.CompletedAt.Month))
+            .Select(x => new ChartData<int>(x.Key, x.Count()))
+            .OrderBy(x=>x.key);
+        var timeline = runs.Result
+            .GroupBy(x => (x.CompletedAt.Date))
+            .Select(x => new ChartData<DateTime>(x.Key, x.Count()))
+            .OrderBy(x=>x.key);
+        var timeRatio = runs.Result.GroupBy(x => (x.InTime))
+            .Select(x => new ChartData<bool>(x.Key, x.Count()))
+            .OrderBy(x=>x.key);
+
+
+        return new ChartsResponse()
+        {
+            Ratio = timeRatio,
+            ByMember = groupedByMembers,
+            Timeline = timeline,
+            ByDays = groupedByDays,
+            ByHours = groupedByHours,
+            ByKey = groupedByKey,
+            ByMonths = groupedByMonth
         };
     }
 
@@ -86,3 +136,15 @@ public class DungeonService
     }
 }
 
+public record ChartData<T>(T key, int count);
+
+public class ChartsResponse
+{
+    public IEnumerable<ChartData<int>> ByKey { get; set; }
+    public IEnumerable<ChartData<int>> ByMember { get; set; }
+    public IEnumerable<ChartData<int>> ByHours { get; set; }
+    public IEnumerable<ChartData<int>> ByDays { get; set; }
+    public IEnumerable<ChartData<int>> ByMonths { get; set; }
+    public IEnumerable<ChartData<DateTime>> Timeline { get; set; }
+    public IEnumerable<ChartData<bool>> Ratio { get; set; }
+}
