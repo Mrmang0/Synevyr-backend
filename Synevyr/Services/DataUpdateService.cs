@@ -22,10 +22,10 @@ public class DataUpdateService : IHostedService
     
     private async Task UpdateRutine(CancellationToken cancellationToken)
     {
-        // await _tgbService.UpdateGuildMembers();
-        // await Task.Delay(60 * 1000, cancellationToken);
-        // await _tgbService.UpdateRuns();
-        // await Task.Delay(TimeSpan.FromHours(3), cancellationToken);
+        await _tgbService.UpdateGuildMembers();
+        await Task.Delay(60 * 1000, cancellationToken);
+        await _tgbService.UpdateRuns();
+        await Task.Delay(TimeSpan.FromHours(3), cancellationToken);
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
