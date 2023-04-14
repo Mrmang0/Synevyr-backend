@@ -24,10 +24,10 @@ public class TheGreatBoostService
         _logger = logger;
     }
 
-    private async Task UpdateRunInfo(Models.Runs run, Current currentPeriod)
+    private async Task<int> UpdateRunInfo(Models.Runs run, Current currentPeriod)
     {
         var isExist = _dungeonRepo.AsQuaryable().FirstOrDefault(x => x.RunId == run.summary.keystone_run_id);
-        if (isExist != null && isExist.completedAt != DateTime.MinValue) return;
+        if (isExist != null && isExist.completedAt != DateTime.MinValue) return run.summary.keystone_run_id;
 
         var details = await _api.GetRunDetails(run.summary.keystone_run_id, run.summary.season);
         var runMembers = details.roster.ToList().Select(x => new RunMember()
@@ -39,7 +39,7 @@ public class TheGreatBoostService
             Name = x.character.name,
         }).ToList();
         
-        if(runMembers.All(x=>x.Id == Guid.Empty)) return;
+        if(runMembers.All(x=>x.Id == Guid.Empty)) return run.summary.keystone_run_id;
         _dungeonRepo.Save(new DungeonRunModel()
         {
             RunId = run.summary.keystone_run_id,
@@ -58,6 +58,7 @@ public class TheGreatBoostService
         var entity = _updateRepo.AsQuaryable().FirstOrDefault() ?? new UpdateDetails();
         entity.LastUpdate = DateTime.Now;
         _updateRepo.Save(entity);
+        return run.summary.keystone_run_id;
     }
 
     private async Task UpdateGuildMemberInfo(Members member)
@@ -124,6 +125,7 @@ public class TheGreatBoostService
 
     public async Task UpdateRuns()
     {
+        List<int> RunIds = new List<int>();
         var members = _memberRepo
             .AsQuaryable()
             .ToList();
@@ -138,9 +140,11 @@ public class TheGreatBoostService
 
                 foreach (var run in runs.runs)
                 {
+                    if(RunIds.Any(x=>x == run.summary.keystone_run_id)) continue;
+                    
                     try
                     {
-                        await UpdateRunInfo(run, currentPeriod);
+                        RunIds.Add(await UpdateRunInfo(run, currentPeriod));
                         await Task.Delay(250);
                     }
                     catch (Exception e)
@@ -153,7 +157,6 @@ public class TheGreatBoostService
             {
                 _logger.LogError("{e}", e);
             }
-            
         }
     }
 
