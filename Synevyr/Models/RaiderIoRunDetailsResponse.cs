@@ -63,9 +63,9 @@ public class RosterCharacter
     public string path { get; set; }
     public Realm realm { get; set; }
     public Region region { get; set; }
-    public object stream { get; set; }
-    public object[] recruitmentProfiles { get; set; }
-    public TalentLoadout talentLoadout { get; set; }
+    // public object stream { get; set; }
+    // public object[] recruitmentProfiles { get; set; }
+    // public TalentLoadout talentLoadout { get; set; }
 }
 
 public class Class
