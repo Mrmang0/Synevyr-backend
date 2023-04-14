@@ -77,9 +77,9 @@ public class DungeonService
         };
     }
 
-    public async Task<ChartsResponse> GetChartsData(string names, DateTime? start, DateTime? end, bool descending, int minKeyLevel, int maxKeyLevel, int dungeonId)
+    public async Task<ChartsResponse> GetChartsData(string names, DateTime? start, DateTime? end, int minKeyLevel, int maxKeyLevel, int dungeonId)
     {
-        var runs =  GetRuns(names, start, end, 0, 0, descending, minKeyLevel, maxKeyLevel, dungeonId);
+        var runs =  GetRuns(names, start, end, 0, 0, false, minKeyLevel, maxKeyLevel, dungeonId);
 
         var groupedByKey = runs.Result.GroupBy(x => x.KeyLevel)
             .Select(x => new ChartData<int>(x.Key, x.Count()))

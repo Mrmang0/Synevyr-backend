@@ -132,20 +132,28 @@ public class TheGreatBoostService
         var currentPeriod = period.periods.First(x => x.region == "eu").current;
         foreach (var member in members)
         {
-            var runs = await _api.GetRuns(member.CharacterId, currentPeriod.start);
-
-            foreach (var run in runs.runs)
+            try
             {
-                try
+                var runs = await _api.GetRuns(member.CharacterId, currentPeriod.start);
+
+                foreach (var run in runs.runs)
                 {
-                    await UpdateRunInfo(run, currentPeriod);
-                    await Task.Delay(250);
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError("{e}", e);
+                    try
+                    {
+                        await UpdateRunInfo(run, currentPeriod);
+                        await Task.Delay(250);
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.LogError("{e}", e);
+                    }
                 }
             }
+            catch (Exception e)
+            {
+                _logger.LogError("{e}", e);
+            }
+            
         }
     }
 

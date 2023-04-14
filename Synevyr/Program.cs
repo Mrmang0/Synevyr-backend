@@ -69,9 +69,9 @@ app.MapGet("api/dungeons",
             int minKey, int maxKey, int dungeonId) =>
         service.GetRuns(names, start, end, skip, take, descending, minKey, maxKey, dungeonId));
 app.MapGet("api/dungeons/charts",
-    (DungeonService service, string names, DateTime? start, DateTime? end, bool descending,
+    (DungeonService service, string names, DateTime? start, DateTime? end,
             int minKey, int maxKey, int dungeonId) =>
-        service.GetChartsData(names, start, end, descending, minKey, maxKey, dungeonId));
+        service.GetChartsData(names, start, end, minKey, maxKey, dungeonId));
 
 app.Run();
 
