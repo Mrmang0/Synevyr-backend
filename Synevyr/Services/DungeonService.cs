@@ -55,7 +55,11 @@ public class DungeonService
             runs = runs.Where(x => x.PeriodStart <= end);
 
         var dungeons = _dungeonRepo.AsQuaryable().ToList();
-
+        
+        runs = runs.Where(x => x.KeyLevel >= minKeyLevel);
+        if(maxKeyLevel > 0)
+            runs = runs.Where(x => x.KeyLevel <= maxKeyLevel);
+        
         var count = runs.Count();
         
         if (skip != 0)
@@ -68,9 +72,6 @@ public class DungeonService
             runs = runs.Take(take);
         }
 
-        runs = runs.Where(x => x.KeyLevel >= minKeyLevel);
-        if(maxKeyLevel > 0)
-         runs = runs.Where(x => x.KeyLevel <= maxKeyLevel);
         
         var result = runs.ToList()
             .Select(x =>
