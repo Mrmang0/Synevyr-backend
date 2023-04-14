@@ -29,11 +29,11 @@ public class DungeonService
             var trimedNames = names.Trim(',').Trim();
             if (trimedNames.Contains(','))
             {
-                var splitedNames = names.Split(',');
+                var splitedNames = names.Split(',').Select(x=>x.Trim());
 
                 foreach (var name in splitedNames)
                 {
-                    runs = runs.Where(x =>  x.Members.Any(x=>x.Name == name) );
+                    runs = runs.Where(x =>  x.Members.Any(x=>x.Name.ToLower() == name.ToLower()) );
                 }
             }
             else
