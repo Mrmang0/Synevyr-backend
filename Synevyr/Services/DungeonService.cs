@@ -24,6 +24,24 @@ public class DungeonService
         var runs = _runRepo.AsQuaryable();
         runs = descending ? runs.OrderByDescending(x => x.completedAt) : runs.OrderBy(x => x.completedAt);
         
+        if (!string.IsNullOrEmpty(names.Replace("\"", "")))
+        {
+            var trimedNames = names.Trim(',').Trim();
+            if (trimedNames.Contains(','))
+            {
+                var splitedNames = names.Split(',');
+
+                foreach (var name in splitedNames)
+                {
+                    runs = runs.Where(x =>  x.Members.Any(x=>x.Name == name) );
+                }
+            }
+            else
+            {
+                runs = runs.Where(x => x.Members.Any(x => x.Name.Contains(trimedNames)));
+            }
+        }
+
         
         if (dungeonId > 0)
         {
@@ -68,21 +86,7 @@ public class DungeonService
                     x.completedAt));
         
         
-        if (!string.IsNullOrEmpty(names.Replace("\"", "")))
-        {
-            var trimedNames = names.Trim(',').Trim();
-            if (trimedNames.Contains(','))
-            {
-                var splitedNames = names.Trim(',');
-
-                result = result.Where(x => x.Members.Select(x => x.Name).Contains(splitedNames));
-            }
-            else
-            {
-                result = result.Where(x => x.Members.Any(x => x.Name == trimedNames));
-            }
-        }
-        
+      
         return new SearchResult<DungeonStatsDto>()
         {
             Count = count,
