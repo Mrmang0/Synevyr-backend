@@ -53,6 +53,11 @@ public class RosterService
         });
     }
 
+    public IEnumerable<string> GetGuildMembersNamesSearch(string name)
+    {
+        return _membersRepo.AsQuaryable().Where(x => x.Name.Contains(name)).Select(x=>x.Name);
+    }
+    
     public void InitRanks()
     {
         var ranks = new List<string>()

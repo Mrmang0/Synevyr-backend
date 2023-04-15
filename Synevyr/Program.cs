@@ -72,6 +72,7 @@ app.MapGet("api/dungeons/charts",
     (DungeonService service, string names, DateTime? start, DateTime? end,
             int minKey, int maxKey, int dungeonId) =>
         service.GetChartsData(names, start, end, minKey, maxKey, dungeonId));
+app.MapGet("api/members/search", (RosterService service, string name) => service.GetGuildMembersNamesSearch(name));
 
 app.Run();
 
