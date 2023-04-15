@@ -49,10 +49,10 @@ public class DungeonService
         }
         
         if (start.HasValue)
-            runs = runs.Where(x => x.PeriodStart >= start);
+            runs = runs.Where(x => x.completedAt >= start);
 
         if (end.HasValue)
-            runs = runs.Where(x => x.PeriodStart <= end);
+            runs = runs.Where(x => x.completedAt <= end);
 
         var dungeons = _dungeonRepo.AsQuaryable().ToList();
         
