@@ -136,6 +136,11 @@ public class DungeonService
         };
     }
 
+    public IEnumerable<DungeonModel> GetDungeons()
+    {
+        return _dungeonRepo.AsQuaryable().ToList();
+    }
+
     public async Task MAKE_DUNGEONS_GREAT_AGAIN()
     {
         var runs = _runRepo.AsQuaryable().ToList();
