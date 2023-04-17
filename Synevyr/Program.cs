@@ -36,6 +36,16 @@ builder.Services.AddHttpClient<RaiderIoApi>((client =>
 {
     client.BaseAddress = new Uri("https://raider.io/api/");
 }));
+builder.Services.AddHttpClient<IcyVeinsRssService>((client =>
+{
+    client.BaseAddress = new Uri("https://www.icy-veins.com/forums/forum/9-news.xml");
+}));
+builder.Services.AddHttpClient<WowheadRssService>((client =>
+{
+    client.BaseAddress = new Uri("https://www.wowhead.com/news/rss/all");
+}));
+builder.Services.AddTransient<NewsService>();
+
 builder.Services.AddHostedService<DataUpdateService>();
 
 builder.Services.AddCors(options =>
@@ -74,6 +84,7 @@ app.MapGet("api/dungeons/charts",
             int minKey, int maxKey, int dungeonId) =>
         service.GetChartsData(names, start, end, minKey, maxKey, dungeonId));
 app.MapGet("api/members/search", (RosterService service, string name) => service.GetGuildMembersNamesSearch(name));
+app.MapGet("api/news", (NewsService service) => service.GetNews());
 
 app.Run();
 
