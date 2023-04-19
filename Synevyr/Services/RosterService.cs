@@ -61,7 +61,7 @@ public class RosterService
     public void InitRanks()
     {
         var ranks = new List<string>()
-            {"Guild Master", "RL", "Officer", "Raider", "RaiderTrial", "Mythic+ Crew", "PeeVeePee", "Member", "Alt"};
+            {"Guild Master", "RL", "Officer", "Raider","Raider's Alt", "Raider Trial", "Mythic+ Crew", "PeeVeePee", "Member", "Alt"};
         var result = ranks.Select((x, i) =>
 
             new GuildRankModel()
